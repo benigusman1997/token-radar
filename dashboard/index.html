@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">DEFI LLAMA SNAPSHOT · <span id="asof">—</span> · SEALED INPUT</p>
+    <h1>Token Radar</h1>
+    <p class="sub">Every protocol that still records no token, ranked by what its launch would be worth — and how to farm it before it happens.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel" id="board-panel">
+    <div class="panel-head">
+      <h2>The board</h2>
+      <p class="hint">Click a row for the protocol's detail view and farm plan. Click a column header to sort.</p>
+    </div>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search name or slug…" aria-label="Search protocols">
+      <select id="cat" aria-label="Filter by category"><option value="">All categories</option></select>
+      <select id="chain" aria-label="Filter by chain"><option value="">All chains</option></select>
+      <label class="check"><input id="watch" type="checkbox"> Watchlist only</label>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="table-wrap">
+      <table id="board">
+        <thead><tr>
+          <th data-sort="rank">#</th>
+          <th data-sort="name">Protocol</th>
+          <th data-sort="category">Category</th>
+          <th>Chains</th>
+          <th data-sort="tvl_usd">TVL</th>
+          <th data-sort="change_7d">7d</th>
+          <th data-sort="age_days">Age</th>
+          <th data-sort="implied_value_usd">Implied value</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="foot-note">Implied value is this radar's own claim from the snapshot's figures — not a prediction that a token will be issued, or what it will be worth if one is.</p>
+  </section>
+
+  <section class="panel" id="how">
+    <h2>How the value is built</h2>
+    <p>Each category's multiple is the median <b>market cap / TVL</b> of the live-token protocols in that category — the market's own price for the same kind of protocol. Fewer than three comps, and the category falls back to the global median. Then:</p>
+    <pre class="formula">implied = TVL × multiple[category]
+        × (1 + clamp(7d change, −60%, +120%) × 0.5)
+        × (0.6 + min(age, 1095 days) / 1095 × 0.4)
+        × (1 + 0.05 × min(chains − 1, 4))</pre>
+    <p>No protocol name is ever special-cased: the same function scores every row. The table below is computed from this snapshot, not written by hand.</p>
+    <div class="table-wrap"><table id="multiples">
+      <thead><tr><th>Category</th><th>Multiple</th><th>Live comps</th><th>Source</th></tr></thead>
+      <tbody id="mult-rows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel" id="live-panel">
+    <h2>Live tokens — the calibration set</h2>
+    <p>Protocols whose token already trades. The board never ranks them; their market caps are what the multiples above are made of. A protocol here is a reference, not a launch to farm.</p>
+    <div class="table-wrap"><table id="live">
+      <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Market cap</th><th>MC / TVL</th></tr></thead>
+      <tbody id="live-rows"></tbody>
+    </table></div>
+  </section>
+
+  <footer class="foot">
+    <p>Source: DefiLlama protocols snapshot, fetched 14 Nov 2026. <span id="source"></span></p>
+    <p>Model radar-2. Farm steps are a plan, not advice: check the protocol's own pages before you move funds, and never pay anyone to claim an airdrop.</p>
+  </footer>
+</main>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="detail" id="detail" role="dialog" aria-modal="true"></div>
+</div>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
